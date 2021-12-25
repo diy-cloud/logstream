@@ -14,18 +14,18 @@ package main
 import (
     "errors"
 
-    "github.com/snowmerak/error-stream"
+    errorstream "github.com/snowmerak/error-stream"
 )
 
 func main() {
-    const normalStream = "normal"
+    const normalTopic = "normal"
 
     es := errorstream.New(8)
-    es.EnQueue(normalStream, errors.New("new error"))
+    es.EnQueue(normalTopic, errors.New("new error"))
 
-    err, b := es.DeQueue(normalStream)
+    err, b := es.DeQueue(normaTopicm)
     if !b {
-        panic("not exist topic")
+        panic(normalTopic + " is not exist topic")
     }
 
     println(err)
