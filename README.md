@@ -23,7 +23,7 @@ func main() {
     es := errorstream.New(8)
     es.EnQueue(normalTopic, errors.New("new error"))
 
-    err, b := es.DeQueue(normaTopicm)
+    err, b := es.DeQueue(normaTopic)
     if !b {
         panic(normalTopic + " is not exist topic")
     }
