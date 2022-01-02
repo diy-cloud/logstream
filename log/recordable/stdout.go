@@ -27,10 +27,10 @@ func NewStdout(level loglevel.LogLevel, displayTime bool, converter func(log.Log
 	}
 }
 
-func (s *Stdout) Write(level loglevel.LogLevel, value log.Log) error {
+func (s *Stdout) Write(value log.Log) error {
 	s.Lock()
 	defer s.Unlock()
-	if loglevel.Available(s.level, level) {
+	if loglevel.Available(s.level, value.Level) {
 		if s.displayTime {
 			s.writer.Write([]byte(time.Now().Format(time.RFC3339)))
 			s.writer.Write([]byte(" "))
