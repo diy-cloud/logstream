@@ -7,7 +7,7 @@ import (
 	"github.com/snowmerak/logstream/log"
 )
 
-// I replaced unsafe.Pointer to T.
+// I replaced unsafe.Pointer to Log.
 
 type LogRingBuffer struct {
 	buf     []log.Log
