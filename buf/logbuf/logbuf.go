@@ -11,10 +11,24 @@ type LogBuffer struct {
 	bufferSize int
 }
 
-func New(bufferSize int) LogBuffer {
-	return LogBuffer{
+func New(bufferSize int) *LogBuffer {
+	return &LogBuffer{
 		trie:       ctrie.New(nil),
 		bufferSize: bufferSize,
+	}
+}
+
+func (e *LogBuffer) AddTopic(topic string) {
+	key := []byte(topic)
+	if _, ok := e.trie.Lookup(key); !ok {
+		e.trie.Insert(key, unlock.NewLogRingBuffer(e.bufferSize))
+	}
+}
+
+func (e *LogBuffer) RemoveTopic(topic string) {
+	key := []byte(topic)
+	if _, ok := e.trie.Lookup(key); ok {
+		e.trie.Remove(key)
 	}
 }
 
