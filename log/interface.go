@@ -1,9 +1,7 @@
 package log
 
-import "github.com/snowmerak/msgbuf/log/loglevel"
-
 type Writable interface {
-	Write(level loglevel.LogLevel, value Log) error
+	Write(log Log) error
 	Close() error
 }
 
