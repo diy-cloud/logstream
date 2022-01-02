@@ -9,7 +9,7 @@ import (
 )
 
 type LogFactory struct {
-	Time    int64
+	Time    time.Time
 	Message strings.Builder
 	Level   loglevel.LogLevel
 
@@ -19,12 +19,12 @@ type LogFactory struct {
 type Log struct {
 	Message string
 	Level   loglevel.LogLevel
-	Time    int64
+	Time    time.Time
 }
 
 func New(level loglevel.LogLevel, message string) *LogFactory {
 	l := &LogFactory{}
-	l.Time = time.Now().UnixMicro()
+	l.Time = time.Now()
 	l.Level = level
 	switch level {
 	case loglevel.Debug:
