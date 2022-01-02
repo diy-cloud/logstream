@@ -63,7 +63,7 @@ func (s *Stdout) observe() {
 					s.writer.WriteByte('\n')
 					s.writer.Flush()
 				}
-				s.waiting = nil
+				s.waiting = s.waiting[:0]
 			}
 			s.Unlock()
 		}
