@@ -3,26 +3,28 @@ package unlock
 import (
 	"runtime"
 	"sync/atomic"
+
+	"github.com/snowmerak/msgbuf/log"
 )
 
 // I replaced unsafe.Pointer to T.
 
-type StringRingBuffer struct {
-	buf     []string
+type LogRingBuffer struct {
+	buf     []log.Log
 	size    int
 	r, w    int
 	counter int64
 	TLock
 }
 
-func NewStringRingBuffer(size int) *StringRingBuffer {
-	r := new(StringRingBuffer)
-	r.buf = make([]string, size)
+func NewLogRingBuffer(size int) *LogRingBuffer {
+	r := new(LogRingBuffer)
+	r.buf = make([]log.Log, size)
 	r.size = size
 	return r
 }
 
-func (b *StringRingBuffer) EnQueue(x string) {
+func (b *LogRingBuffer) EnQueue(x log.Log) {
 	for {
 		ctr := atomic.LoadInt64(&b.counter)
 		if ctr+1 > int64(b.size) {
@@ -42,7 +44,7 @@ func (b *StringRingBuffer) EnQueue(x string) {
 	b.Unlock()
 }
 
-func (b *StringRingBuffer) DeQueue() string {
+func (b *LogRingBuffer) DeQueue() log.Log {
 	for {
 		ctr := atomic.LoadInt64(&b.counter)
 		if ctr <= 0 {
@@ -63,7 +65,7 @@ func (b *StringRingBuffer) DeQueue() string {
 	return val
 }
 
-func (b *StringRingBuffer) EnQueueMany(x []string) {
+func (b *LogRingBuffer) EnQueueMany(x []log.Log) {
 	length := len(x)
 	for {
 		ctr := atomic.LoadInt64(&b.counter)
@@ -86,7 +88,7 @@ func (b *StringRingBuffer) EnQueueMany(x []string) {
 	b.Unlock()
 }
 
-func (b *StringRingBuffer) DeQueueMany(dst []string) {
+func (b *LogRingBuffer) DeQueueMany(dst []log.Log) {
 	length := len(dst)
 	for {
 		ctr := atomic.LoadInt64(&b.counter)
