@@ -2,8 +2,8 @@ package logbuf
 
 import (
 	"github.com/Workiva/go-datastructures/trie/ctrie"
-	"github.com/snowmerak/msgbuf/log"
-	"github.com/snowmerak/msgbuf/unlock"
+	"github.com/snowmerak/logstream/log"
+	"github.com/snowmerak/logstream/unlock"
 )
 
 type LogBuffer struct {

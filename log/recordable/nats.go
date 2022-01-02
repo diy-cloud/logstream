@@ -5,9 +5,9 @@ import (
 	"sync/atomic"
 
 	"github.com/nats-io/nats.go"
-	"github.com/snowmerak/msgbuf/log"
-	"github.com/snowmerak/msgbuf/log/loglevel"
-	"github.com/snowmerak/msgbuf/unlock"
+	"github.com/snowmerak/logstream/log"
+	"github.com/snowmerak/logstream/log/loglevel"
+	"github.com/snowmerak/logstream/unlock"
 )
 
 var connsLock = unlock.TLock{}

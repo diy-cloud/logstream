@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/snowmerak/msgbuf/log/loglevel"
+	"github.com/snowmerak/logstream/log/loglevel"
 )
 
 type LogFactory struct {

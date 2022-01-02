@@ -1,4 +1,4 @@
-module github.com/snowmerak/msgbuf
+module github.com/snowmerak/logstream
 
 go 1.18
 
