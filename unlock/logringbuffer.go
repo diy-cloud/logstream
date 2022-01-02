@@ -4,7 +4,7 @@ import (
 	"runtime"
 	"sync/atomic"
 
-	"github.com/snowmerak/msgbuf/log"
+	"github.com/snowmerak/logstream/log"
 )
 
 // I replaced unsafe.Pointer to T.
