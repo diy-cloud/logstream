@@ -8,6 +8,8 @@ import (
 	"github.com/snowmerak/msgbuf/log/loglevel"
 )
 
+var Conn map[string]*nats.Conn
+
 type Nats struct {
 	conn      *nats.Conn
 	subject   string
@@ -15,13 +17,20 @@ type Nats struct {
 	converter func(log.Log) string
 }
 
+func init() {
+	Conn = make(map[string]*nats.Conn)
+}
+
 func NewNatsConnection(url string, subject string, converter func(log.Log) string) (log.Writable, error) {
-	nc, err := nats.Connect(url)
-	if err != nil {
-		return nil, err
+	if _, ok := Conn[url]; !ok {
+		var err error
+		Conn[url], err = nats.Connect(url)
+		if err != nil {
+			return nil, err
+		}
 	}
 	return &Nats{
-		conn:      nc,
+		conn:      Conn[url],
 		subject:   subject,
 		converter: converter,
 	}, nil
