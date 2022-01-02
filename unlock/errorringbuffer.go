@@ -5,24 +5,22 @@ import (
 	"sync/atomic"
 )
 
-// I replaced unsafe.Pointer to T.
-
-type StringRingBuffer struct {
-	buf     []string
+type ErrorRingBuffer struct {
+	buf     []error
 	size    int
 	r, w    int
 	counter int64
 	TLock
 }
 
-func NewStringRingBuffer(size int) *StringRingBuffer {
-	r := new(StringRingBuffer)
-	r.buf = make([]string, size)
+func NewErrorRingBuffer(size int) *ErrorRingBuffer {
+	r := new(ErrorRingBuffer)
+	r.buf = make([]error, size)
 	r.size = size
 	return r
 }
 
-func (b *StringRingBuffer) EnQueue(x string) {
+func (b *ErrorRingBuffer) EnQueue(x error) {
 	for {
 		ctr := atomic.LoadInt64(&b.counter)
 		if ctr+1 > int64(b.size) {
@@ -42,7 +40,7 @@ func (b *StringRingBuffer) EnQueue(x string) {
 	b.Unlock()
 }
 
-func (b *StringRingBuffer) DeQueue() string {
+func (b *ErrorRingBuffer) DeQueue() error {
 	for {
 		ctr := atomic.LoadInt64(&b.counter)
 		if ctr <= 0 {
@@ -63,7 +61,7 @@ func (b *StringRingBuffer) DeQueue() string {
 	return val
 }
 
-func (b *StringRingBuffer) EnQueueMany(x []string) {
+func (b *ErrorRingBuffer) EnQueueMany(x []error) {
 	length := len(x)
 	for {
 		ctr := atomic.LoadInt64(&b.counter)
@@ -86,7 +84,7 @@ func (b *StringRingBuffer) EnQueueMany(x []string) {
 	b.Unlock()
 }
 
-func (b *StringRingBuffer) DeQueueMany(dst []string) {
+func (b *ErrorRingBuffer) DeQueueMany(dst []error) {
 	length := len(dst)
 	for {
 		ctr := atomic.LoadInt64(&b.counter)
