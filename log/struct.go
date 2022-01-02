@@ -12,6 +12,8 @@ type LogFactory struct {
 	Time    int64
 	Message strings.Builder
 	Level   loglevel.LogLevel
+
+	hasParam bool
 }
 
 type Log struct {
@@ -43,31 +45,55 @@ func New(level loglevel.LogLevel, message string) *LogFactory {
 }
 
 func (l *LogFactory) AddParamString(key string, value string) *LogFactory {
+	if !l.hasParam {
+		l.Message.WriteString(" ?")
+		l.hasParam = true
+	}
 	l.Message.WriteString(" \033[0;90m" + key + "\033[0m=" + value)
 	return l
 }
 
 func (l *LogFactory) AddParamInt(key string, value int) *LogFactory {
+	if !l.hasParam {
+		l.Message.WriteString(" ?")
+		l.hasParam = true
+	}
 	l.Message.WriteString(" \033[0;90m" + key + "\033[0m=" + strconv.FormatInt(int64(value), 10))
 	return l
 }
 
 func (l *LogFactory) AddParamUint(key string, value uint) *LogFactory {
+	if !l.hasParam {
+		l.Message.WriteString(" ?")
+		l.hasParam = true
+	}
 	l.Message.WriteString(" \033[0;90m" + key + "\033[0m=" + strconv.FormatUint(uint64(value), 10))
 	return l
 }
 
 func (l *LogFactory) AddParamBool(key string, value bool) *LogFactory {
+	if !l.hasParam {
+		l.Message.WriteString(" ?")
+		l.hasParam = true
+	}
 	l.Message.WriteString(" \033[0;90m" + key + "\033[0m=" + strconv.FormatBool(value))
 	return l
 }
 
 func (l *LogFactory) AddParamFloat(key string, value float64) *LogFactory {
+	if !l.hasParam {
+		l.Message.WriteString(" ?")
+		l.hasParam = true
+	}
 	l.Message.WriteString(" \033[0;90m" + key + "\033[0m=" + strconv.FormatFloat(value, 'f', -1, 64))
 	return l
 }
 
 func (l *LogFactory) AddParamComplex(key string, value complex128) *LogFactory {
+	if !l.hasParam {
+		l.Message.WriteString(" ?")
+		l.hasParam = true
+	}
 	l.Message.WriteString(" \033[0;90m" + key + "\033[0m=" + strconv.FormatComplex(value, 'f', -1, 64))
 	return l
 }
