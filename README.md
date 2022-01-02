@@ -1,10 +1,10 @@
-# error-stream
+# msgbuf
 
-error-stream is simple tool for global error handling with topic.
+msgbuf is simple tool for global data handling.
 
 ## install
 
-`go get github.com/snowmerak/error-stream`
+`go get github.com/snowmerak/msgbuf`
 
 ## use
 
@@ -14,13 +14,13 @@ package main
 import (
     "errors"
 
-    errorstream "github.com/snowmerak/error-stream"
+    "github.com/snowmerak/msgbuf"
 )
 
 func main() {
     const normalTopic = "normal"
 
-    es := errorstream.New(8)
+    es := megbuf.New[error](8)
     es.EnQueue(normalTopic, errors.New("new error"))
 
     err, b := es.DeQueue(normaTopic)
