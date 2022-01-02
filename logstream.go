@@ -51,7 +51,7 @@ func (l *LogStream) Observe(topic string, writers ...log.Writable) error {
 	return nil
 }
 
-func (l *LogStream) Push(topic string, value log.Log) {
+func (l *LogStream) Write(topic string, value log.Log) {
 	l.buf.EnQueue(topic, value)
 }
 
