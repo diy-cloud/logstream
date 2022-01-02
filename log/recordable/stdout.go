@@ -48,21 +48,23 @@ func (s *Stdout) observe() {
 			return
 		case <-time.After(100 * time.Millisecond):
 			s.Lock()
-			sort.Slice(s.waiting, func(i, j int) bool {
-				return s.waiting[i].Time.Before(s.waiting[j].Time)
-			})
-			for _, value := range s.waiting {
-				if s.converter == nil {
-					s.writer.Write([]byte(value.Time.Format(time.RFC3339Nano)))
-					s.writer.Write([]byte(" "))
-					s.writer.Write([]byte(value.Message))
-				} else {
-					s.writer.Write([]byte(s.converter(value)))
+			if len(s.waiting) > 0 {
+				sort.Slice(s.waiting, func(i, j int) bool {
+					return s.waiting[i].Time.Before(s.waiting[j].Time)
+				})
+				for _, value := range s.waiting {
+					if s.converter == nil {
+						s.writer.Write([]byte(value.Time.Format(time.RFC3339Nano)))
+						s.writer.Write([]byte(" "))
+						s.writer.Write([]byte(value.Message))
+					} else {
+						s.writer.Write([]byte(s.converter(value)))
+					}
+					s.writer.WriteByte('\n')
+					s.writer.Flush()
 				}
-				s.writer.WriteByte('\n')
-				s.writer.Flush()
+				s.waiting = nil
 			}
-			s.waiting = nil
 			s.Unlock()
 		}
 	}
