@@ -9,25 +9,30 @@ import (
 )
 
 type Nats struct {
-	conn    *nats.Conn
-	subject string
-	level   loglevel.LogLevel
+	conn      *nats.Conn
+	subject   string
+	level     loglevel.LogLevel
+	converter func(log.Log) string
 }
 
-func NewNatsConnection(url string, subject string) (log.Writable, error) {
+func NewNatsConnection(url string, subject string, converter func(log.Log) string) (log.Writable, error) {
 	nc, err := nats.Connect(url)
 	if err != nil {
 		return nil, err
 	}
 	return &Nats{
-		conn:    nc,
-		subject: subject,
+		conn:      nc,
+		subject:   subject,
+		converter: converter,
 	}, nil
 }
 
-func (n *Nats) Write(level loglevel.LogLevel, value []byte) error {
+func (n *Nats) Write(level loglevel.LogLevel, value log.Log) error {
 	if loglevel.Available(n.level, level) {
-		return n.conn.Publish(n.subject, value)
+		if n.converter == nil {
+			return n.conn.Publish(n.subject, []byte(value.Message))
+		}
+		return n.conn.Publish(n.subject, []byte(n.converter(value)))
 	}
 	return nil
 }

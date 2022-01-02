@@ -3,7 +3,7 @@ package log
 import "github.com/snowmerak/msgbuf/log/loglevel"
 
 type Writable interface {
-	Write(level loglevel.LogLevel, value []byte) error
+	Write(level loglevel.LogLevel, value Log) error
 	Close() error
 }
 
