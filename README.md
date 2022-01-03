@@ -19,39 +19,53 @@ import (
 	"github.com/snowmerak/logstream/log"
 	"github.com/snowmerak/logstream/log/loglevel"
 	"github.com/snowmerak/logstream/log/recordable"
-	"github.com/snowmerak/logstream/logqueue/logbuf"
+	"github.com/snowmerak/logstream/logqueue/logquebuf"
+	"github.com/snowmerak/logstream/unlock/logringbuf"
 )
 
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	ls := logstream.New(ctx, logbuf.New(8), 8)
-	ls.ObserveTopic("A", recordable.NewStdout(ctx, loglevel.All, nil))
-	ls.ObserveTopic("B", recordable.NewStdout(ctx, loglevel.All, nil))
 
-	ls.Write("A", log.New(loglevel.Fatal, "a fatal log").End())
-	ls.Write("B", log.New(loglevel.Fatal, "b fatal log").End())
-	ls.Write("A", log.New(loglevel.Error, "a error log").End())
-	ls.Write("B", log.New(loglevel.Error, "b error log").End())
-	ls.Write("A", log.New(loglevel.Warn, "a warn log").End())
-	ls.Write("B", log.New(loglevel.Warn, "b warn log").End())
-	ls.Write("A", log.New(loglevel.Info, "a info log").End())
-	ls.Write("B", log.New(loglevel.Info, "b info log").End())
-	ls.Write("A", log.New(loglevel.Debug, "a debug log").End())
-	ls.Write("B", log.New(loglevel.Debug, "b debug log").End())
-	time.Sleep(150 * time.Microsecond)
+	// using proirity queue for log buffer
+	ls := logstream.New(ctx, logquebuf.New(8), 8)
+	ls.ObserveTopic("A", recordable.NewStdout(ctx, loglevel.All, nil))
+
+	for i := 0; i < 10; i++ {
+		ls.Write("A", log.New(loglevel.Fatal, "qp time test log").End())
+	}
+
+	// using ringbuffer for log buffer
+	ls = logstream.New(ctx, logringbuf.New(8), 8)
+	ls.ObserveTopic("A", recordable.NewStdout(ctx, loglevel.All, nil))
+
+	for i := 0; i < 10; i++ {
+		ls.Write("A", log.New(loglevel.Fatal, "rb time test log").End())
+	}
+
+	time.Sleep(1 * time.Second)
 }
 ```
 
 ```bash
-2022-01-03T13:40:13.707361+09:00 [FATAL] b fatal log
-2022-01-03T13:40:13.707363+09:00 [ERROR] b error log
-2022-01-03T13:40:13.707364+09:00 [WARN] b warn log
-2022-01-03T13:40:13.707365+09:00 [INFO] b info log
-2022-01-03T13:40:13.707371+09:00 [DEBUG] b debug log
-2022-01-03T13:40:13.707358+09:00 [FATAL] a fatal log
-2022-01-03T13:40:13.707362+09:00 [ERROR] a error log
-2022-01-03T13:40:13.707363+09:00 [WARN] a warn log
-2022-01-03T13:40:13.707364+09:00 [INFO] a info log
-2022-01-03T13:40:13.70737+09:00 [DEBUG] a debug log
+2022-01-03T14:02:14.048117+09:00 [FATAL] qp time test log
+2022-01-03T14:02:14.048119+09:00 [FATAL] qp time test log
+2022-01-03T14:02:14.04812+09:00 [FATAL] qp time test log
+2022-01-03T14:02:14.048121+09:00 [FATAL] qp time test log
+2022-01-03T14:02:14.048121+09:00 [FATAL] qp time test log
+2022-01-03T14:02:14.048122+09:00 [FATAL] qp time test log
+2022-01-03T14:02:14.048123+09:00 [FATAL] qp time test log
+2022-01-03T14:02:14.048123+09:00 [FATAL] qp time test log
+2022-01-03T14:02:14.048124+09:00 [FATAL] qp time test log
+2022-01-03T14:02:14.048168+09:00 [FATAL] qp time test log
+2022-01-03T14:02:14.048331+09:00 [FATAL] rb time test log
+2022-01-03T14:02:14.048335+09:00 [FATAL] rb time test log
+2022-01-03T14:02:14.048335+09:00 [FATAL] rb time test log
+2022-01-03T14:02:14.048336+09:00 [FATAL] rb time test log
+2022-01-03T14:02:14.048336+09:00 [FATAL] rb time test log
+2022-01-03T14:02:14.048337+09:00 [FATAL] rb time test log
+2022-01-03T14:02:14.048337+09:00 [FATAL] rb time test log
+2022-01-03T14:02:14.048337+09:00 [FATAL] rb time test log
+2022-01-03T14:02:14.048338+09:00 [FATAL] rb time test log
+2022-01-03T14:02:14.048354+09:00 [FATAL] rb time test log
 ```
