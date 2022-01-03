@@ -2,7 +2,7 @@ package errbuf
 
 import (
 	"github.com/Workiva/go-datastructures/trie/ctrie"
-	"github.com/snowmerak/msgbuf/unlock"
+	"github.com/snowmerak/logstream/unlock"
 )
 
 type ErrorBuffer struct {
