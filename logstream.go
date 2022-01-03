@@ -54,6 +54,14 @@ func (ls *LogStream) ObserveTopic(topic string, writers ...log.Writable) error {
 		for {
 			select {
 			case <-ls.ctx.Done():
+				ls.lock.Lock()
+				for _, w := range ls.writers[topic].list {
+					w.Close()
+				}
+				ls.buf.RemoveTopic(topic)
+				close(ls.writers[topic].signal)
+				delete(ls.writers, topic)
+				ls.lock.Unlock()
 				return
 			case <-ls.writers[topic].signal:
 				l, err := ls.buf.DeQueue(topic)
