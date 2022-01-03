@@ -1,5 +1,33 @@
 # queue
 
+this is wrapper of priority queue by `github.com/Workiva/go-datastructures/queue`
+
+## New
+
+```go
+func New(size int) *LogQueue
+```
+
+create new `LogQueue` instance with given size.
+
+## Push
+
+```go
+func (lq *LogQueue) Push(log log.Log) error
+```
+
+push `log.Log` to `LogQueue`.
+
+## Pop
+
+```go
+func (lq *LogQueue) Pop() (log.Log, error)
+```
+
+pop `log.Log` from `LogQueue`.  
+if `LogQueue` is empty, do not return error.  
+if you receive error, you have some problems with `LogQueue` or computer.
+
 ## priority queue LICENSE
 
 Copyright 2014 Workiva, LLC
