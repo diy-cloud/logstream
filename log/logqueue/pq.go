@@ -11,7 +11,7 @@ type LogQueue struct {
 	queue *queue.PriorityQueue
 }
 
-func New(size int) *LogQueue {
+func New(size int) log.DataStructure {
 	return &LogQueue{
 		queue: queue.NewPriorityQueue(size, false),
 	}
