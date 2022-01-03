@@ -35,6 +35,8 @@ func main() {
 		ls.Write("A", log.New(loglevel.Fatal, "qp time test log").End())
 	}
 
+	fmt.Println("-----")
+
 	// using ringbuffer for log buffer
 	ls = logstream.New(ctx, logringbuf.New(8), 8)
 	ls.ObserveTopic("A", recordable.NewStdout(ctx, loglevel.All, nil))
@@ -58,6 +60,7 @@ func main() {
 2022-01-03T14:02:14.048123+09:00 [FATAL] qp time test log
 2022-01-03T14:02:14.048124+09:00 [FATAL] qp time test log
 2022-01-03T14:02:14.048168+09:00 [FATAL] qp time test log
+-----
 2022-01-03T14:02:14.048331+09:00 [FATAL] rb time test log
 2022-01-03T14:02:14.048335+09:00 [FATAL] rb time test log
 2022-01-03T14:02:14.048335+09:00 [FATAL] rb time test log
