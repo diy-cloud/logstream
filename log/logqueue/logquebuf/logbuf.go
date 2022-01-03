@@ -5,7 +5,7 @@ import (
 
 	"github.com/Workiva/go-datastructures/trie/ctrie"
 	"github.com/snowmerak/logstream/log"
-	"github.com/snowmerak/logstream/logqueue"
+	"github.com/snowmerak/logstream/log/logqueue"
 )
 
 type LogBuffer struct {

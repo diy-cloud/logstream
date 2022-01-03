@@ -5,7 +5,6 @@ import (
 
 	"github.com/Workiva/go-datastructures/trie/ctrie"
 	"github.com/snowmerak/logstream/log"
-	"github.com/snowmerak/logstream/logqueue"
 	"github.com/snowmerak/logstream/unlock"
 )
 
@@ -44,7 +43,7 @@ func (e *LogRingBuffer) RemoveTopic(topic string) {
 func (e *LogRingBuffer) EnQueue(topic string, value log.Log) {
 	key := []byte(topic)
 	if _, ok := e.trie.Lookup(key); !ok {
-		e.trie.Insert(key, logqueue.New(e.bufferSize))
+		e.trie.Insert(key, unlock.NewLogRingBuffer(e.bufferSize))
 	}
 	p, _ := e.trie.Lookup(key)
 	ringBuffer := p.(*unlock.LogRingBuffer)
