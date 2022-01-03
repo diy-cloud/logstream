@@ -7,7 +7,6 @@ import (
 
 	"github.com/snowmerak/logstream/log"
 	"github.com/snowmerak/logstream/log/loglevel"
-	"github.com/snowmerak/logstream/logqueue/logbuf"
 )
 
 type writer struct {
@@ -17,13 +16,20 @@ type writer struct {
 
 type LogStream struct {
 	ctx     context.Context
-	buf     *logbuf.LogBuffer
+	buf     LogBuffer
 	writers map[string]writer
 	lock    *sync.Mutex
 	bufSize int
 }
 
-func New(ctx context.Context, buf *logbuf.LogBuffer, bufSize int) *LogStream {
+type LogBuffer interface {
+	AddTopic(topic string, signal chan struct{})
+	RemoveTopic(topic string)
+	EnQueue(topic string, value log.Log)
+	DeQueue(topic string) (log.Log, error)
+}
+
+func New(ctx context.Context, buf LogBuffer, bufSize int) *LogStream {
 	return &LogStream{
 		ctx:     ctx,
 		buf:     buf,
