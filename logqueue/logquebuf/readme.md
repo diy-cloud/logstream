@@ -1,5 +1,60 @@
 # logbuf
 
+## LogBuffer
+
+```go
+type LogBuffer struct {
+	trie       *ctrie.Ctrie
+	bufferSize int
+	signals    map[string]chan struct{}
+}
+```
+
+`LogBuffer` has a `ctrie.Ctrie` instance for topic.  
+And `signals` is a map of channel for topic.  
+Finally, `bufferSize` is a size of queue for buffer.
+
+## New
+
+```go
+func New(bufferSize int) *LogBuffer
+```
+
+`New` constructor is a constructor of `LogBuffer` with given buffer size.  
+
+## AddTopic
+
+```go
+func (e *LogBuffer) AddTopic(topic string, signal chan struct{})
+```
+
+`AddTopic` add a topic to `LogBuffer` instance and initialize signal.
+
+## RemoveTopic
+
+```go
+func (e *LogBuffer) RemoveTopic(topic string)
+```
+
+`RemoveTopic` remove a topic from `LogBuffer` instance.  
+DO NOT CALL THIS MENIALY.
+
+## Enqueue
+
+```go
+func (e *LogBuffer) EnQueue(topic string, value log.Log)
+```
+
+`Enqueue` method is push `value` to `topic` queue in `LogBuffer`.
+
+## Dequeue
+
+```go
+func (e *LogBuffer) DeQueue(topic string) (log.Log, error)
+```
+
+`Dequeue` method is pop `value` from `topic` queue in `LogBuffer`.
+
 ## ctrie LICENSE
 
 Copyright 2015 Workiva, LLC
