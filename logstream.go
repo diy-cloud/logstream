@@ -2,83 +2,67 @@ package logstream
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"sync"
 
-	"github.com/snowmerak/logstream/buf/logbuf"
 	"github.com/snowmerak/logstream/log"
 	"github.com/snowmerak/logstream/log/loglevel"
+	"github.com/snowmerak/logstream/logqueue/logbuf"
 )
+
+type writer struct {
+	list   []log.Writable
+	signal chan struct{}
+}
 
 type LogStream struct {
 	ctx     context.Context
 	buf     *logbuf.LogBuffer
-	writers map[string][]log.Writable
+	writers map[string]writer
 	lock    *sync.Mutex
+	bufSize int
 }
 
-func New(ctx context.Context, buf *logbuf.LogBuffer) *LogStream {
+func New(ctx context.Context, buf *logbuf.LogBuffer, bufSize int) *LogStream {
 	return &LogStream{
-		ctx: ctx,
-		buf: buf,
+		ctx:     ctx,
+		buf:     buf,
+		writers: map[string]writer{},
+		lock:    &sync.Mutex{},
+		bufSize: bufSize,
 	}
 }
 
-func (l *LogStream) Observe(topic string, writers ...log.Writable) error {
-	if l.writers == nil {
-		l.writers = make(map[string][]log.Writable)
+func (ls *LogStream) ObserveTopic(topic string, writers ...log.Writable) error {
+	ls.lock.Lock()
+	defer ls.lock.Unlock()
+	if _, ok := ls.writers[topic]; ok {
+		return errors.New("LogStream.AddTopic: topic already exists")
 	}
-	l.writers[topic] = writers
-
-	l.buf.AddTopic(topic)
-
+	ls.writers[topic] = writer{
+		list:   writers,
+		signal: make(chan struct{}, ls.bufSize),
+	}
+	ls.buf.AddTopic(topic, ls.writers[topic].signal)
 	go func() {
 		for {
-			value, ok := l.buf.DeQueue(topic)
-			if !ok {
+			select {
+			case <-ls.ctx.Done():
 				return
-			}
-			for _, ch := range l.writers[topic] {
-				go func(ch log.Writable) {
-					if err := ch.Write(value); err != nil {
-						fmt.Println("LogStream.Observe: cannot write to writable on " + topic + ": " + err.Error())
-					}
-				}(ch)
+			case <-ls.writers[topic].signal:
+				l, err := ls.buf.DeQueue(topic)
+				if err != nil {
+					l = log.New(loglevel.Fatal, err.Error()).End()
+				}
+				for _, w := range ls.writers[topic].list {
+					w.Write(l)
+				}
 			}
 		}
 	}()
-
 	return nil
 }
 
-func (l *LogStream) Write(topic string, value log.Log) {
-	l.buf.EnQueue(topic, value)
-}
-
-func (l *LogStream) CloseTopic(topic string) {
-	l.buf.RemoveTopic(topic)
-	l.buf.EnQueue(topic, log.Log{Level: loglevel.Fatal, Message: "LogStream.CloseTopic"})
-	for _, w := range l.writers[topic] {
-		if err := w.Close(); err != nil {
-			fmt.Println("LogStream.CloseTopic: cannot close writable: " + err.Error())
-		}
-	}
-	l.lock.Lock()
-	l.writers[topic] = nil
-	delete(l.writers, topic)
-	l.lock.Unlock()
-}
-
-func (l *LogStream) Close() {
-	for topic, wl := range l.writers {
-		l.buf.RemoveTopic(topic)
-		l.buf.EnQueue(topic, log.Log{Level: loglevel.Fatal, Message: "LogStream.Close"})
-		for _, w := range wl {
-			if err := w.Close(); err != nil {
-				fmt.Println("LogStream.Close: cannot close writable: " + err.Error())
-			}
-		}
-	}
-	l.writers = nil
-	l.buf = nil
+func (ls *LogStream) Write(topic string, l log.Log) {
+	ls.buf.EnQueue(topic, l)
 }
