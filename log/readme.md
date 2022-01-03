@@ -74,3 +74,16 @@ func (l Log) Compare(other queue.Item) int
 if `l.Time` is earlier than `other.Time`, return -1.  
 if `l.Time` is later than `other.Time`, return 1.  
 else, return 0.  
+
+# Interface
+
+## Writable
+
+```go
+type Writable interface {
+	Write(log Log) error
+	Close() error
+}
+```
+
+`Writable` is interface for writing log.
