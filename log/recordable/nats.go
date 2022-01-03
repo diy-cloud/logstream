@@ -2,15 +2,15 @@ package recordable
 
 import (
 	"fmt"
+	"sync"
 	"sync/atomic"
 
 	"github.com/nats-io/nats.go"
 	"github.com/snowmerak/logstream/log"
 	"github.com/snowmerak/logstream/log/loglevel"
-	"github.com/snowmerak/logstream/unlock"
 )
 
-var connsLock = unlock.TLock{}
+var connsLock = sync.Mutex{}
 var conns map[string]*nats.Conn
 var count map[string]*int64
 
