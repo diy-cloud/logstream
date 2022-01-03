@@ -1,4 +1,4 @@
-package logbuf
+package logquebuf
 
 import (
 	"errors"
