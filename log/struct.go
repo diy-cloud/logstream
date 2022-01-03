@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Workiva/go-datastructures/queue"
 	"github.com/snowmerak/logstream/log/loglevel"
 )
 
@@ -103,5 +104,19 @@ func (l *LogFactory) End() Log {
 		Message: l.Message.String(),
 		Level:   l.Level,
 		Time:    l.Time,
+	}
+}
+
+func (l Log) Compare(other queue.Item) int {
+	o, ok := other.(Log)
+	if !ok {
+		return 0
+	}
+	if l.Time.Before(o.Time) {
+		return -1
+	} else if l.Time.After(o.Time) {
+		return 1
+	} else {
+		return 0
 	}
 }
