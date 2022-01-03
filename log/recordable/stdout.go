@@ -16,7 +16,6 @@ type Stdout struct {
 	level     loglevel.LogLevel
 	writer    *bufio.Writer
 	converter func(log.Log) string
-	waiting   []log.Log
 	ctx       context.Context
 }
 
