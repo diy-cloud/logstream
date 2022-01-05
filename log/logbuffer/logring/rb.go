@@ -5,13 +5,14 @@ import (
 
 	"github.com/Workiva/go-datastructures/queue"
 	"github.com/snowmerak/logstream/log"
+	"github.com/snowmerak/logstream/log/logbuffer"
 )
 
 type LogRingBuffer struct {
 	ringbuffer *queue.RingBuffer
 }
 
-func New(size int) log.DataStructure {
+func New(size int) logbuffer.LogBuffer {
 	return &LogRingBuffer{
 		ringbuffer: queue.NewRingBuffer(uint64(size)),
 	}
