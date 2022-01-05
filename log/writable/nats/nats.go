@@ -1,4 +1,4 @@
-package recordable
+package nats
 
 import (
 	"fmt"
@@ -8,6 +8,7 @@ import (
 	"github.com/nats-io/nats.go"
 	"github.com/snowmerak/logstream/log"
 	"github.com/snowmerak/logstream/log/loglevel"
+	"github.com/snowmerak/logstream/log/writable"
 )
 
 var connsLock = sync.Mutex{}
@@ -27,7 +28,7 @@ func init() {
 	count = make(map[string]*int64)
 }
 
-func NewNatsConnection(url string, subject string, converter func(log.Log) string) (log.Writable, error) {
+func NewNatsConnection(url string, subject string, converter func(log.Log) string) (writable.Writable, error) {
 	connsLock.Lock()
 	defer connsLock.Unlock()
 	if _, ok := conns[url]; !ok {

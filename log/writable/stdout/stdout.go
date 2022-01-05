@@ -1,4 +1,4 @@
-package recordable
+package stdout
 
 import (
 	"bufio"
@@ -9,6 +9,7 @@ import (
 
 	"github.com/snowmerak/logstream/log"
 	"github.com/snowmerak/logstream/log/loglevel"
+	"github.com/snowmerak/logstream/log/writable"
 )
 
 type Stdout struct {
@@ -19,7 +20,7 @@ type Stdout struct {
 	ctx       context.Context
 }
 
-func NewStdout(ctx context.Context, level loglevel.LogLevel, converter func(log.Log) string) log.Writable {
+func NewStdout(ctx context.Context, level loglevel.LogLevel, converter func(log.Log) string) writable.Writable {
 	s := &Stdout{
 		writer:    bufio.NewWriter(os.Stdout),
 		level:     level,
