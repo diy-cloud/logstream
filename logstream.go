@@ -7,10 +7,11 @@ import (
 
 	"github.com/snowmerak/logstream/log"
 	"github.com/snowmerak/logstream/log/loglevel"
+	"github.com/snowmerak/logstream/log/writable"
 )
 
 type writer struct {
-	list   []log.Writable
+	list   []writable.Writable
 	signal chan struct{}
 }
 
@@ -39,7 +40,7 @@ func New(ctx context.Context, buf LogBuffer, bufSize int) *LogStream {
 	}
 }
 
-func (ls *LogStream) ObserveTopic(topic string, writers ...log.Writable) error {
+func (ls *LogStream) ObserveTopic(topic string, writers ...writable.Writable) error {
 	ls.lock.Lock()
 	defer ls.lock.Unlock()
 	if _, ok := ls.writers[topic]; ok {
