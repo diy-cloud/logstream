@@ -5,13 +5,14 @@ import (
 
 	"github.com/Workiva/go-datastructures/queue"
 	"github.com/snowmerak/logstream/log"
+	"github.com/snowmerak/logstream/log/logbuffer"
 )
 
 type LogQueue struct {
 	queue *queue.PriorityQueue
 }
 
-func New(size int) log.DataStructure {
+func New(size int) logbuffer.LogBuffer {
 	return &LogQueue{
 		queue: queue.NewPriorityQueue(size, false),
 	}
