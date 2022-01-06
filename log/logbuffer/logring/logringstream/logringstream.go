@@ -1,4 +1,4 @@
-package logringbuf
+package logringstream
 
 import (
 	"errors"
@@ -10,21 +10,21 @@ import (
 	"github.com/snowmerak/logstream/log/logbuffer/logring"
 )
 
-type LogRingBuffer struct {
+type LogRingStream struct {
 	trie       *ctrie.Ctrie
 	bufferSize int
 	signals    map[string]chan struct{}
 }
 
-func New(bufferSize int) *LogRingBuffer {
-	return &LogRingBuffer{
+func New(bufferSize int) *LogRingStream {
+	return &LogRingStream{
 		trie:       ctrie.New(nil),
 		bufferSize: bufferSize,
 		signals:    map[string]chan struct{}{},
 	}
 }
 
-func (e *LogRingBuffer) AddTopic(topic string, signal chan struct{}) {
+func (e *LogRingStream) AddTopic(topic string, signal chan struct{}) {
 	key := []byte(topic)
 	if _, ok := e.trie.Lookup(key); !ok {
 		e.trie.Insert(key, logring.New(e.bufferSize))
@@ -34,7 +34,7 @@ func (e *LogRingBuffer) AddTopic(topic string, signal chan struct{}) {
 	}
 }
 
-func (e *LogRingBuffer) RemoveTopic(topic string) {
+func (e *LogRingStream) RemoveTopic(topic string) {
 	key := []byte(topic)
 	if _, ok := e.trie.Lookup(key); ok {
 		e.trie.Remove(key)
@@ -42,7 +42,7 @@ func (e *LogRingBuffer) RemoveTopic(topic string) {
 	delete(e.signals, topic)
 }
 
-func (e *LogRingBuffer) EnQueue(topic string, value log.Log) {
+func (e *LogRingStream) EnQueue(topic string, value log.Log) {
 	key := []byte(topic)
 	if _, ok := e.trie.Lookup(key); !ok {
 		e.trie.Insert(key, logqueue.New(e.bufferSize))
@@ -55,7 +55,7 @@ func (e *LogRingBuffer) EnQueue(topic string, value log.Log) {
 	}
 }
 
-func (e *LogRingBuffer) DeQueue(topic string) (log.Log, error) {
+func (e *LogRingStream) DeQueue(topic string) (log.Log, error) {
 	key := []byte(topic)
 	if _, ok := e.trie.Lookup(key); !ok {
 		return log.Log{}, errors.New("LogBuffer.DeQueue: topic not found")

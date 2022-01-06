@@ -15,23 +15,23 @@ type writer struct {
 	signal chan struct{}
 }
 
-type LogStream struct {
+type GlobalQueue struct {
 	ctx     context.Context
-	buf     LogBuffer
+	buf     LogStream
 	writers map[string]writer
 	lock    *sync.Mutex
 	bufSize int
 }
 
-type LogBuffer interface {
+type LogStream interface {
 	AddTopic(topic string, signal chan struct{})
 	RemoveTopic(topic string)
 	EnQueue(topic string, value log.Log)
 	DeQueue(topic string) (log.Log, error)
 }
 
-func New(ctx context.Context, buf LogBuffer, bufSize int) *LogStream {
-	return &LogStream{
+func New(ctx context.Context, buf LogStream, bufSize int) *GlobalQueue {
+	return &GlobalQueue{
 		ctx:     ctx,
 		buf:     buf,
 		writers: map[string]writer{},
@@ -40,7 +40,7 @@ func New(ctx context.Context, buf LogBuffer, bufSize int) *LogStream {
 	}
 }
 
-func (ls *LogStream) ObserveTopic(topic string, writers ...writable.Writable) error {
+func (ls *GlobalQueue) ObserveTopic(topic string, writers ...writable.Writable) error {
 	ls.lock.Lock()
 	defer ls.lock.Unlock()
 	if _, ok := ls.writers[topic]; ok {
@@ -78,6 +78,6 @@ func (ls *LogStream) ObserveTopic(topic string, writers ...writable.Writable) er
 	return nil
 }
 
-func (ls *LogStream) Write(topic string, l log.Log) {
+func (ls *GlobalQueue) Write(topic string, l log.Log) {
 	ls.buf.EnQueue(topic, l)
 }
