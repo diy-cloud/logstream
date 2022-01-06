@@ -20,7 +20,7 @@ type Stdout struct {
 	ctx       context.Context
 }
 
-func NewStdout(ctx context.Context, level loglevel.LogLevel, converter func(log.Log) string) writable.Writable {
+func New(ctx context.Context, level loglevel.LogLevel, converter func(log.Log) string) writable.Writable {
 	s := &Stdout{
 		writer:    bufio.NewWriter(os.Stdout),
 		level:     level,

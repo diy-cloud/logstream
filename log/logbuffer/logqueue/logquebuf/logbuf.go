@@ -5,7 +5,8 @@ import (
 
 	"github.com/Workiva/go-datastructures/trie/ctrie"
 	"github.com/snowmerak/logstream/log"
-	"github.com/snowmerak/logstream/log/logqueue"
+	"github.com/snowmerak/logstream/log/logbuffer"
+	"github.com/snowmerak/logstream/log/logbuffer/logqueue"
 )
 
 type LogQueueBuffer struct {
@@ -46,8 +47,8 @@ func (e *LogQueueBuffer) EnQueue(topic string, value log.Log) {
 		e.trie.Insert(key, logqueue.New(e.bufferSize))
 	}
 	p, _ := e.trie.Lookup(key)
-	ringBuffer := p.(log.DataStructure)
-	ringBuffer.Push(value)
+	logBuffer := p.(logbuffer.LogBuffer)
+	logBuffer.Push(value)
 	if e.signals[topic] != nil {
 		e.signals[topic] <- struct{}{}
 	}
@@ -59,6 +60,6 @@ func (e *LogQueueBuffer) DeQueue(topic string) (log.Log, error) {
 		return log.Log{}, errors.New("LogBuffer.DeQueue: topic not found")
 	}
 	p, _ := e.trie.Lookup(key)
-	ringBuffer := p.(log.DataStructure)
-	return ringBuffer.Pop()
+	logBuffer := p.(logbuffer.LogBuffer)
+	return logBuffer.Pop()
 }
