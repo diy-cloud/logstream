@@ -1,4 +1,4 @@
-package logringstream
+package logstream
 
 import (
 	"errors"
@@ -7,34 +7,35 @@ import (
 	"github.com/snowmerak/logstream/log"
 	"github.com/snowmerak/logstream/log/logbuffer"
 	"github.com/snowmerak/logstream/log/logbuffer/logqueue"
-	"github.com/snowmerak/logstream/log/logbuffer/logring"
 )
 
-type LogRingStream struct {
-	trie       *ctrie.Ctrie
-	bufferSize int
-	signals    map[string]chan struct{}
+type LogStream struct {
+	trie              *ctrie.Ctrie
+	bufferSize        int
+	signals           map[string]chan struct{}
+	bufferConstructor func(int) logbuffer.LogBuffer
 }
 
-func New(bufferSize int) *LogRingStream {
-	return &LogRingStream{
-		trie:       ctrie.New(nil),
-		bufferSize: bufferSize,
-		signals:    map[string]chan struct{}{},
+func New(bufferSize int, bufferConstructor func(int) logbuffer.LogBuffer) *LogStream {
+	return &LogStream{
+		trie:              ctrie.New(nil),
+		bufferSize:        bufferSize,
+		signals:           map[string]chan struct{}{},
+		bufferConstructor: bufferConstructor,
 	}
 }
 
-func (e *LogRingStream) AddTopic(topic string, signal chan struct{}) {
+func (e *LogStream) AddTopic(topic string, signal chan struct{}) {
 	key := []byte(topic)
 	if _, ok := e.trie.Lookup(key); !ok {
-		e.trie.Insert(key, logring.New(e.bufferSize))
+		e.trie.Insert(key, e.bufferConstructor(e.bufferSize))
 	}
 	if _, ok := e.signals[topic]; !ok {
 		e.signals[topic] = signal
 	}
 }
 
-func (e *LogRingStream) RemoveTopic(topic string) {
+func (e *LogStream) RemoveTopic(topic string) {
 	key := []byte(topic)
 	if _, ok := e.trie.Lookup(key); ok {
 		e.trie.Remove(key)
@@ -42,7 +43,7 @@ func (e *LogRingStream) RemoveTopic(topic string) {
 	delete(e.signals, topic)
 }
 
-func (e *LogRingStream) EnQueue(topic string, value log.Log) {
+func (e *LogStream) EnQueue(topic string, value log.Log) {
 	key := []byte(topic)
 	if _, ok := e.trie.Lookup(key); !ok {
 		e.trie.Insert(key, logqueue.New(e.bufferSize))
@@ -55,7 +56,7 @@ func (e *LogRingStream) EnQueue(topic string, value log.Log) {
 	}
 }
 
-func (e *LogRingStream) DeQueue(topic string) (log.Log, error) {
+func (e *LogStream) DeQueue(topic string) (log.Log, error) {
 	key := []byte(topic)
 	if _, ok := e.trie.Lookup(key); !ok {
 		return log.Log{}, errors.New("LogBuffer.DeQueue: topic not found")

@@ -1,4 +1,4 @@
-package logstream
+package globalque
 
 import (
 	"context"
@@ -6,6 +6,8 @@ import (
 	"sync"
 
 	"github.com/snowmerak/logstream/log"
+	"github.com/snowmerak/logstream/log/logbuffer"
+	"github.com/snowmerak/logstream/log/logbuffer/logstream"
 	"github.com/snowmerak/logstream/log/loglevel"
 	"github.com/snowmerak/logstream/log/writable"
 )
@@ -17,23 +19,16 @@ type writer struct {
 
 type GlobalQueue struct {
 	ctx     context.Context
-	buf     LogStream
+	buf     *logstream.LogStream
 	writers map[string]writer
 	lock    *sync.Mutex
 	bufSize int
 }
 
-type LogStream interface {
-	AddTopic(topic string, signal chan struct{})
-	RemoveTopic(topic string)
-	EnQueue(topic string, value log.Log)
-	DeQueue(topic string) (log.Log, error)
-}
-
-func New(ctx context.Context, buf LogStream, bufSize int) *GlobalQueue {
+func New(ctx context.Context, bufConstructor func(int) logbuffer.LogBuffer, bufSize int) *GlobalQueue {
 	return &GlobalQueue{
 		ctx:     ctx,
-		buf:     buf,
+		buf:     logstream.New(bufSize, bufConstructor),
 		writers: map[string]writer{},
 		lock:    &sync.Mutex{},
 		bufSize: bufSize,

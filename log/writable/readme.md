@@ -5,10 +5,10 @@
 ### New
 
 ```go
-func NewStdout(ctx context.Context, level loglevel.LogLevel, converter func(log.Log) string) log.Writable
+func New(ctx context.Context, level loglevel.LogLevel, converter func(log.Log) string) log.Writable
 ```
 
-`NewStdout` is constructor of `Stdout` instance.  
+`New` is constructor of `Stdout` instance.  
 `ctx` is recomended to use `context.WithCancel` to cancel `Stdout` instance.  
 `level` is criterion of this `log.Writable` instance.  
 `converter` is converting `log.Log` to string when writing.  
