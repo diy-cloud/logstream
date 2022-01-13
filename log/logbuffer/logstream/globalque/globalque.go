@@ -73,6 +73,6 @@ func (ls *GlobalQueue) ObserveTopic(topic string, writers ...writable.Writable) 
 	return nil
 }
 
-func (ls *GlobalQueue) Write(topic string, l log.Log) {
-	ls.buf.EnQueue(topic, l)
+func (ls *GlobalQueue) Write(topic string, l log.Log) error {
+	return ls.buf.EnQueue(topic, l)
 }
