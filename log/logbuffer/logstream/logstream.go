@@ -42,10 +42,10 @@ func (e *LogStream) RemoveTopic(topic string) {
 	delete(e.signals, topic)
 }
 
-func (e *LogStream) EnQueue(topic string, value log.Log) {
+func (e *LogStream) EnQueue(topic string, value log.Log) error {
 	key := []byte(topic)
 	if _, ok := e.trie.Lookup(key); !ok {
-		panic("LogBuffer.EnQueue: topic not found")
+		return errors.New("LogBuffer.EnQueue: topic not found")
 	}
 	p, _ := e.trie.Lookup(key)
 	ringBuffer := p.(logbuffer.LogBuffer)
@@ -53,6 +53,7 @@ func (e *LogStream) EnQueue(topic string, value log.Log) {
 	if e.signals[topic] != nil {
 		e.signals[topic] <- struct{}{}
 	}
+	return nil
 }
 
 func (e *LogStream) DeQueue(topic string) (log.Log, error) {
