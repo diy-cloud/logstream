@@ -6,7 +6,6 @@ import (
 	"github.com/Workiva/go-datastructures/trie/ctrie"
 	"github.com/snowmerak/logstream/log"
 	"github.com/snowmerak/logstream/log/logbuffer"
-	"github.com/snowmerak/logstream/log/logbuffer/logqueue"
 )
 
 type LogStream struct {
@@ -46,7 +45,7 @@ func (e *LogStream) RemoveTopic(topic string) {
 func (e *LogStream) EnQueue(topic string, value log.Log) {
 	key := []byte(topic)
 	if _, ok := e.trie.Lookup(key); !ok {
-		e.trie.Insert(key, logqueue.New(e.bufferSize))
+		panic("LogBuffer.EnQueue: topic not found")
 	}
 	p, _ := e.trie.Lookup(key)
 	ringBuffer := p.(logbuffer.LogBuffer)
