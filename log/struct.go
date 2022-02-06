@@ -1,122 +1,138 @@
 package log
 
 import (
+	"encoding/hex"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/Workiva/go-datastructures/queue"
-	"github.com/snowmerak/logstream/log/loglevel"
+	"github.com/snowmerak/log-silo/log"
 )
 
-type LogFactory struct {
-	Time    time.Time
-	Message strings.Builder
-	Level   loglevel.LogLevel
+type Log log.Log
 
-	hasParam bool
-}
-
-type Log struct {
-	Message string
-	Level   loglevel.LogLevel
-	Time    time.Time
-}
-
-func New(level loglevel.LogLevel, message string) *LogFactory {
-	l := &LogFactory{}
-	l.Time = time.Now()
+func New(appID int32, level int32, msg string, param ...Param) *Log {
+	l := new(Log)
+	l.AppID = appID
 	l.Level = level
-	switch level {
-	case loglevel.Debug:
-		l.Message.WriteString(loglevel.WrapColor(level, "[DEBUG] "))
-	case loglevel.Info:
-		l.Message.WriteString(loglevel.WrapColor(level, "[INFO] "))
-	case loglevel.Warn:
-		l.Message.WriteString(loglevel.WrapColor(level, "[WARN] "))
-	case loglevel.Error:
-		l.Message.WriteString(loglevel.WrapColor(level, "[ERROR] "))
-	case loglevel.Fatal:
-		l.Message.WriteString(loglevel.WrapColor(level, "[FATAL] "))
-	default:
-		l.Message.WriteString(loglevel.WrapColor(level, "[UNKNOWN] "))
+	l.UnixTime = time.Now().Unix()
+
+	length := len(msg) + 3
+	for _, p := range param {
+		length += len(p) + 1
 	}
-	l.Message.WriteString(message)
+	buf := make([]byte, length)
+
+	cur := 0
+	copy(buf[cur:], msg)
+	cur += len(msg)
+	copy(buf[cur:], " ? ")
+	cur += 3
+	for _, p := range param {
+		copy(buf[cur:], p)
+		cur += len(p)
+		copy(buf[cur:], " ")
+		cur += 1
+	}
+
+	l.Message = string(buf)
+
 	return l
 }
 
-func (l *LogFactory) AddParamString(key string, value string) *LogFactory {
-	if !l.hasParam {
-		l.Message.WriteString(" ?")
-		l.hasParam = true
-	}
-	l.Message.WriteString(" \033[0;90m" + key + "\033[0m=" + value)
-	return l
-}
-
-func (l *LogFactory) AddParamInt(key string, value int) *LogFactory {
-	if !l.hasParam {
-		l.Message.WriteString(" ?")
-		l.hasParam = true
-	}
-	l.Message.WriteString(" \033[0;90m" + key + "\033[0m=" + strconv.FormatInt(int64(value), 10))
-	return l
-}
-
-func (l *LogFactory) AddParamUint(key string, value uint) *LogFactory {
-	if !l.hasParam {
-		l.Message.WriteString(" ?")
-		l.hasParam = true
-	}
-	l.Message.WriteString(" \033[0;90m" + key + "\033[0m=" + strconv.FormatUint(uint64(value), 10))
-	return l
-}
-
-func (l *LogFactory) AddParamBool(key string, value bool) *LogFactory {
-	if !l.hasParam {
-		l.Message.WriteString(" ?")
-		l.hasParam = true
-	}
-	l.Message.WriteString(" \033[0;90m" + key + "\033[0m=" + strconv.FormatBool(value))
-	return l
-}
-
-func (l *LogFactory) AddParamFloat(key string, value float64) *LogFactory {
-	if !l.hasParam {
-		l.Message.WriteString(" ?")
-		l.hasParam = true
-	}
-	l.Message.WriteString(" \033[0;90m" + key + "\033[0m=" + strconv.FormatFloat(value, 'f', -1, 64))
-	return l
-}
-
-func (l *LogFactory) AddParamComplex(key string, value complex128) *LogFactory {
-	if !l.hasParam {
-		l.Message.WriteString(" ?")
-		l.hasParam = true
-	}
-	l.Message.WriteString(" \033[0;90m" + key + "\033[0m=" + strconv.FormatComplex(value, 'f', -1, 64))
-	return l
-}
-
-func (l *LogFactory) End() Log {
-	return Log{
-		Message: l.Message.String(),
-		Level:   l.Level,
-		Time:    l.Time,
-	}
-}
-
-func (l Log) Compare(other queue.Item) int {
-	o, ok := other.(Log)
+func (l Log) Compare(o queue.Item) int {
+	otherLog, ok := o.(Log)
 	if !ok {
 		return 0
 	}
-	if l.Time.Before(o.Time) {
+	if l.UnixTime < otherLog.UnixTime {
 		return -1
-	} else if l.Time.After(o.Time) {
-		return 1
-	} else {
-		return 0
 	}
+	if l.UnixTime > otherLog.UnixTime {
+		return 1
+	}
+	return 0
+}
+
+type Param string
+
+func String(k string, v string) Param {
+	return Param(k + "=\"" + v + "\"")
+}
+
+func Int(k string, v int) Param {
+	return Param(k + "=" + strconv.FormatInt(int64(v), 10))
+}
+
+func Int8(k string, v int8) Param {
+	return Param(k + "=" + strconv.FormatInt(int64(v), 10))
+}
+
+func Int16(k string, v int16) Param {
+	return Param(k + "=" + strconv.FormatInt(int64(v), 10))
+}
+
+func Int32(k string, v int32) Param {
+	return Param(k + "=" + strconv.FormatInt(int64(v), 10))
+}
+
+func Int64(k string, v int64) Param {
+	return Param(k + "=" + strconv.FormatInt(v, 10))
+}
+
+func Uint(k string, v uint) Param {
+	return Param(k + "=" + strconv.FormatUint(uint64(v), 10))
+}
+
+func Uint8(k string, v uint8) Param {
+	return Param(k + "=" + strconv.FormatUint(uint64(v), 10))
+}
+
+func Uint16(k string, v uint16) Param {
+	return Param(k + "=" + strconv.FormatUint(uint64(v), 10))
+}
+
+func Uint32(k string, v uint32) Param {
+	return Param(k + "=" + strconv.FormatUint(uint64(v), 10))
+}
+
+func Uint64(k string, v uint64) Param {
+	return Param(k + "=" + strconv.FormatUint(v, 10))
+}
+
+func Float64(k string, v float64) Param {
+	return Param(k + "=" + strconv.FormatFloat(v, 'f', -1, 64))
+}
+
+func Float32(k string, v float32) Param {
+	return Param(k + "=" + strconv.FormatFloat(float64(v), 'f', -1, 32))
+}
+
+func Byte(k string, v byte) Param {
+	return Param(k + "='" + string(v) + "'")
+}
+
+func Rune(k string, v rune) Param {
+	return Param(k + "='" + string(v) + "'")
+}
+
+func Duration(k string, v time.Duration) Param {
+	return Param(k + "=" + v.String())
+}
+
+func Hex(k string, v []byte) Param {
+	return Param(k + "=" + hex.EncodeToString(v))
+}
+
+func Binary(k string, v []byte) Param {
+	buf := make([]string, len(v))
+	for i, b := range v {
+		buf[i] = strconv.FormatUint(uint64(b), 2)
+	}
+	return Param(k + "=" + strings.Join(buf, ""))
+}
+
+func Bool(k string, v bool) Param {
+	return Param(k + "=" + strconv.FormatBool(v))
 }

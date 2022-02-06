@@ -1,9 +1,7 @@
 package loglevel
 
-type LogLevel int8
-
 const (
-	All LogLevel = iota
+	All = iota
 	Debug
 	Info
 	Warn
@@ -12,7 +10,7 @@ const (
 	Off
 )
 
-func WrapColor(level LogLevel, message string) string {
+func WrapColor(level int32, message string) string {
 	switch level {
 	case Debug:
 		return "\033[0;36m" + message + "\033[0m"
@@ -29,6 +27,6 @@ func WrapColor(level LogLevel, message string) string {
 	}
 }
 
-func Available(criterion, loglevel LogLevel) bool {
+func Available(criterion, loglevel int32) bool {
 	return criterion <= loglevel
 }

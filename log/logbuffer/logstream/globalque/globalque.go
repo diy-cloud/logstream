@@ -62,7 +62,7 @@ func (ls *GlobalQueue) ObserveTopic(topic string, writers ...writable.Writable) 
 			case <-ls.writers[topic].signal:
 				l, err := ls.buf.DeQueue(topic)
 				if err != nil {
-					l = log.New(loglevel.Fatal, err.Error()).End()
+					l = *log.New(-1, loglevel.Fatal, "cannot dequeue log")
 				}
 				for _, w := range ls.writers[topic].list {
 					w.Write(l)

@@ -18,7 +18,7 @@ var count map[string]*int64
 type Nats struct {
 	conn      *nats.Conn
 	subject   string
-	level     loglevel.LogLevel
+	level     int32
 	converter func(log.Log) string
 	url       string
 }
