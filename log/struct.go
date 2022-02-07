@@ -12,8 +12,8 @@ import (
 
 type Log log.Log
 
-func New(appID int32, level int32, msg string, param ...Param) *Log {
-	l := new(Log)
+func New(appID int32, level int32, msg string, param ...Param) Log {
+	l := Log{}
 	l.AppID = appID
 	l.Level = level
 	l.UnixTime = time.Now().Unix()
