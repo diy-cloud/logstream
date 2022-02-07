@@ -11,16 +11,17 @@ import (
 	"github.com/snowmerak/logstream/log/logbuffer"
 )
 
-var receiveSignal = make(chan string, 32)
+var receiveSignal = make(chan string, 64)
 
 var goroutinePool = gopool.New(int64(runtime.NumCPU() * 4096))
 
 func init() {
 	go func() {
 		for topic := range receiveSignal {
+			t := topic
 			goroutinePool.Go(
 				func() interface{} {
-					key := []byte(topic)
+					key := []byte(t)
 					value, ok := trie.Lookup(key)
 					if !ok {
 						fmt.Println(time.Now().Format(time.RFC3339), "logstream: topic buffer not registered")
@@ -69,11 +70,13 @@ func Write(topic string, log log.Log) error {
 	}
 	buffer := value.(logbuffer.LogBuffer)
 	buffer.Push(log)
-	value, ok = signalMap.Lookup(key)
 	if !ok {
 		return errors.New("topic signal not registered")
 	}
-	signal := value.(chan struct{})
-	signal <- struct{}{}
+	receiveSignal <- topic
 	return nil
+}
+
+func Wait() {
+	goroutinePool.Wait()
 }
