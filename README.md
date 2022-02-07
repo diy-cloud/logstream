@@ -13,43 +13,45 @@ package main
 
 import (
 	"context"
+	"os"
+	"os/signal"
 	"time"
 
+	"github.com/snowmerak/logstream"
+	"github.com/snowmerak/logstream/consumer/stdout"
 	"github.com/snowmerak/logstream/log"
-	"github.com/snowmerak/logstream/log/logbuffer/logqueue"
-	"github.com/snowmerak/logstream/log/logbuffer/logring"
-	"github.com/snowmerak/logstream/log/logbuffer/logstream/globalque"
 	"github.com/snowmerak/logstream/log/loglevel"
-	"github.com/snowmerak/logstream/log/writable/stdout"
 )
 
 func main() {
-	const aTopic = "A"
+	logstream.Trie.RegisterTopic("A")
+	logstream.Trie.RegisterConsumer("A", stdout.New(context.Background(), loglevel.Debug, nil))
+	logstream.Trie.RegisterTopic("B")
+	logstream.Trie.RegisterConsumer("B", stdout.New(context.Background(), loglevel.Error, nil))
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	logstream.Write("A", log.New(0, loglevel.Debug, "A"))
+	logstream.Write("B", log.New(0, loglevel.Debug, "B"))
+	logstream.Write("A", log.New(0, loglevel.Info, "A"))
+	logstream.Write("B", log.New(0, loglevel.Info, "B"))
+	logstream.Write("A", log.New(0, loglevel.Warn, "A"))
+	logstream.Write("B", log.New(0, loglevel.Warn, "B"))
+	logstream.Write("A", log.New(0, loglevel.Error, "A", log.Rune("rune", '🐶')))
+	logstream.Write("B", log.New(0, loglevel.Error, "B", log.Int64("int64", 1)))
+	logstream.Write("A", log.New(0, loglevel.Fatal, "A", log.Bool("bool", true), log.Float64("float64", 1.1)))
+	logstream.Write("B", log.New(0, loglevel.Fatal, "B", log.Duration("one hour", time.Hour), log.Duration("one minute", time.Minute)))
 
-	// using proirity queue for log buffer
-	ls := globalque.New(ctx, logqueue.New, 8)
-	ls.ObserveTopic(aTopic, stdout.New(ctx, loglevel.All, nil))
-
-	ls.Write(aTopic, log.New(loglevel.Debug, "a debug message").End())
-	ls.Write(aTopic, log.New(loglevel.Info, "a info message").AddParamInt("int parameter", 99).End())
-
-	// using ringbuffer for log buffer
-	ls = globalque.New(ctx, logring.New, 8)
-	ls.ObserveTopic("A", stdout.New(ctx, loglevel.All, nil))
-
-	ls.Write(aTopic, log.New(loglevel.Fatal, "a fatal message").End())
-	ls.Write(aTopic, log.New(loglevel.Error, "a error message").End())
-
-	time.Sleep(1 * time.Second)
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, os.Interrupt)
+	<-sig
 }
 ```
 
 ```bash
-2022-01-06T20:44:58.971991+09:00 [DEBUG] a debug message
-2022-01-06T20:44:58.972037+09:00 [INFO] a info message ? int parameter=99
-2022-01-06T20:44:58.972074+09:00 [FATAL] a fatal message
-2022-01-06T20:44:58.972075+09:00 [ERROR] a error message
+2022-02-07T15:58:53+09:00 [DEBUG] A ? 
+2022-02-07T15:58:53+09:00 [INFO] A ? 
+2022-02-07T15:58:53+09:00 [WARN] A ? 
+2022-02-07T15:58:53+09:00 [ERROR] A ? rune='🐶' 
+2022-02-07T15:58:53+09:00 [FATAL] A ? bool=true 
+2022-02-07T15:58:53+09:00 [ERROR] B ? int64=1 
+2022-02-07T15:58:53+09:00 [FATAL] B ? one hour=1h0m0s one minute=1m0s 
 ```
