@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/snowmerak/logstream/consumer"
 	"github.com/snowmerak/logstream/log"
 	"github.com/snowmerak/logstream/log/loglevel"
-	"github.com/snowmerak/logstream/log/writable"
 )
 
 type Stdout struct {
@@ -20,7 +20,7 @@ type Stdout struct {
 	ctx       context.Context
 }
 
-func New(ctx context.Context, level int32, converter func(log.Log) string) writable.Writable {
+func New(ctx context.Context, level int32, converter func(log.Log) string) consumer.Consumer {
 	s := &Stdout{
 		writer:    bufio.NewWriter(os.Stdout),
 		level:     level,
