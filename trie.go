@@ -7,6 +7,7 @@ import (
 	"github.com/Workiva/go-datastructures/trie/ctrie"
 	"github.com/snowmerak/logstream/consumer"
 	"github.com/snowmerak/logstream/log/logbuffer"
+	"github.com/snowmerak/logstream/log/logbuffer/logring"
 )
 
 type Consumers struct {
@@ -15,10 +16,9 @@ type Consumers struct {
 }
 
 var bufferSize = 8
-var bufferConstructor func(int) logbuffer.LogBuffer
+var bufferConstructor func(int) logbuffer.LogBuffer = logring.New
 
 var trie = ctrie.New(nil)
-var signalMap = ctrie.New(nil)
 var consumersMap = ctrie.New(nil)
 
 type tempTrie struct{}
@@ -41,7 +41,6 @@ func (t tempTrie) RegisterTopic(topic string) error {
 	}
 
 	trie.Insert(key, bufferConstructor(bufferSize))
-	signalMap.Insert(key, make(chan struct{}, 1))
 	consumers := Consumers{
 		list: make([]consumer.Consumer, 0),
 	}
@@ -57,7 +56,6 @@ func (t tempTrie) UnregisterTopic(topic string) error {
 	}
 
 	trie.Remove(key)
-	signalMap.Remove(key)
 	consumersMap.Remove(key)
 
 	return nil
