@@ -20,6 +20,7 @@ require (
 	github.com/nats-io/nkeys v0.3.0 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/snowmerak/gopool v0.0.0-20220121163504-61ad73be7d44 // indirect
 	github.com/snowmerak/log-silo v0.0.0-20220206120833-b11ceebcf62e // indirect
 	go.opencensus.io v0.22.5 // indirect
 	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110 // indirect

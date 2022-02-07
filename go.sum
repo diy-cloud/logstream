@@ -193,6 +193,8 @@ github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFR
 github.com/russross/blackfriday v1.5.2/go.mod h1:JO/DiYxRf+HjHt06OyowR9PTA263kcR/rfWxYHBV53g=
 github.com/segmentio/kafka-go v0.4.27 h1:sIhEozeL/TLN2mZ5dkG462vcGEWYKS+u31sXPjKhAM4=
 github.com/segmentio/kafka-go v0.4.27/go.mod h1:XzMcoMjSzDGHcIwpWUI7GB43iKZ2fTVmryPSGLf/MPg=
+github.com/snowmerak/gopool v0.0.0-20220121163504-61ad73be7d44 h1:GyiGqlqW9ol7w2xKzAt4aJq4rANs1nWrLMLhvHO/uSc=
+github.com/snowmerak/gopool v0.0.0-20220121163504-61ad73be7d44/go.mod h1:OqIW75VlXMq8rhn7B9ZWjCEcrXMyc9mQXlLwqCwQ/fI=
 github.com/snowmerak/log-silo v0.0.0-20220206120833-b11ceebcf62e h1:dl/4oYnfMkpAEwti62ZHK4AejFM8MgP9rMcqfmKNcsA=
 github.com/snowmerak/log-silo v0.0.0-20220206120833-b11ceebcf62e/go.mod h1:iseIYXA8eE2DgpQjrNiX8jZ3NQ3CzdqQ8bV0IFD+aXs=
 github.com/spaolacci/murmur3 v0.0.0-20180118202830-f09979ecbc72/go.mod h1:JwIasOWyU6f++ZhiEuf87xNszmSA2myDM2Kzu9HwQUA=
