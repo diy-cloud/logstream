@@ -1,6 +1,6 @@
 package consumer
 
-import "github.com/snowmerak/logstream/log"
+import "github.com/snowmerak/logstream/v2/log"
 
 type Consumer interface {
 	Write(log.Log) error

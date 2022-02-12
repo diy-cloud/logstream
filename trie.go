@@ -5,9 +5,9 @@ import (
 	"sync"
 
 	"github.com/Workiva/go-datastructures/trie/ctrie"
-	"github.com/snowmerak/logstream/consumer"
-	"github.com/snowmerak/logstream/log/logbuffer"
-	"github.com/snowmerak/logstream/log/logbuffer/logring"
+	"github.com/snowmerak/logstream/v2/consumer"
+	"github.com/snowmerak/logstream/v2/log/logbuffer"
+	"github.com/snowmerak/logstream/v2/log/logbuffer/logring"
 )
 
 type Consumers struct {

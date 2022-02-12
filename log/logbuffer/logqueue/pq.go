@@ -4,8 +4,8 @@ import (
 	"errors"
 
 	"github.com/Workiva/go-datastructures/queue"
-	"github.com/snowmerak/logstream/log"
-	"github.com/snowmerak/logstream/log/logbuffer"
+	"github.com/snowmerak/logstream/v2/log"
+	"github.com/snowmerak/logstream/v2/log/logbuffer"
 )
 
 type LogQueue struct {

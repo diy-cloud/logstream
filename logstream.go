@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/snowmerak/gopool"
-	"github.com/snowmerak/logstream/log"
-	"github.com/snowmerak/logstream/log/logbuffer"
+	"github.com/snowmerak/logstream/v2/log"
+	"github.com/snowmerak/logstream/v2/log/logbuffer"
 )
 
 var receiveSignal = make(chan string, 64)

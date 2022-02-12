@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/snowmerak/logstream/consumer"
-	"github.com/snowmerak/logstream/log"
-	"github.com/snowmerak/logstream/log/loglevel"
+	"github.com/snowmerak/logstream/v2/consumer"
+	"github.com/snowmerak/logstream/v2/log"
+	"github.com/snowmerak/logstream/v2/log/loglevel"
 )
 
 type Stdout struct {
