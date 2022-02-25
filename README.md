@@ -17,10 +17,10 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/snowmerak/logstream"
-	"github.com/snowmerak/logstream/consumer/stdout"
-	"github.com/snowmerak/logstream/log"
-	"github.com/snowmerak/logstream/log/loglevel"
+	"github.com/diy-cloud/logstream"
+	"github.com/diy-cloud/logstream/consumer/stdout"
+	"github.com/diy-cloud/logstream/log"
+	"github.com/diy-cloud/logstream/log/loglevel"
 )
 
 func main() {
