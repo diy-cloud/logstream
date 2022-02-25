@@ -1,4 +1,4 @@
-module github.com/snowmerak/logstream/v2
+module github.com/diy-cloud/logstream/v2
 
 go 1.14
 

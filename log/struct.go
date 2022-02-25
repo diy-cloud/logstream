@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/Workiva/go-datastructures/queue"
-	"github.com/snowmerak/log-silo/log"
+	"github.com/diy-cloud/log-silo/log"
 )
 
 type Log log.Log

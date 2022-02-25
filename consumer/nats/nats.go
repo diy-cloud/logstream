@@ -6,10 +6,10 @@ import (
 	"sync"
 	"sync/atomic"
 
+	"github.com/diy-cloud/logstream/v2/consumer"
+	"github.com/diy-cloud/logstream/v2/log"
+	"github.com/diy-cloud/logstream/v2/log/loglevel"
 	"github.com/nats-io/nats.go"
-	"github.com/snowmerak/logstream/v2/consumer"
-	"github.com/snowmerak/logstream/v2/log"
-	"github.com/snowmerak/logstream/v2/log/loglevel"
 )
 
 var connsLock = sync.Mutex{}

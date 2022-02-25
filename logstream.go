@@ -6,9 +6,9 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/diy-cloud/logstream/v2/log"
+	"github.com/diy-cloud/logstream/v2/log/logbuffer"
 	"github.com/snowmerak/gopool"
-	"github.com/snowmerak/logstream/v2/log"
-	"github.com/snowmerak/logstream/v2/log/logbuffer"
 )
 
 var receiveSignal = make(chan string, 64)
