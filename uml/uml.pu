@@ -26,7 +26,6 @@ actor consumer1
 actor consumer2
 actor consumer3
 actor consumer4
-actor consumer5
 
 consumer1 -[hidden]right-> consumer2
 consumer2 -[hidden]right-> consumer3
