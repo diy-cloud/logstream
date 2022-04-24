@@ -1,0 +1,47 @@
+@startuml structure
+
+frame LogStream {
+    collections trie
+    queue bufferA
+    queue bufferB
+    queue bufferC
+}
+
+trie -down-> bufferA
+trie -down-> bufferB
+trie -down-> bufferC
+
+actor producer1
+actor producer2
+actor producer3
+actor producer4
+actor producer5
+
+producer1 -[hidden]right-> producer2
+producer2 -[hidden]right-> producer3
+producer3 -[hidden]right-> producer4
+producer4 -[hidden]right-> producer5
+
+actor consumer1
+actor consumer2
+actor consumer3
+actor consumer4
+actor consumer5
+
+consumer1 -[hidden]right-> consumer2
+consumer2 -[hidden]right-> consumer3
+consumer3 -[hidden]right-> consumer4
+consumer4 -[hidden]right-> consumer5
+
+producer1 -down-> trie
+producer2 -down-> trie
+producer3 -down-> trie
+producer4 -down-> trie
+producer5 -down-> trie
+
+bufferA -down-> consumer1
+bufferB -down-> consumer2
+bufferC -down-> consumer3
+bufferC -down-> consumer4
+
+@enduml

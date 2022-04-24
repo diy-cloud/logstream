@@ -6,7 +6,11 @@ logstream is simple library for logging
 
 `go get github.com/snowmerak/logstream`
 
-## use
+## diagram
+
+![diagram](out/uml/uml/structure.png)
+
+## how to use
 
 ```go
 package main
