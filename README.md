@@ -28,7 +28,10 @@ import (
 )
 
 func main() {
+	// register topic into trie
 	logstream.Trie.RegisterTopic("A")
+	// register consumer into trie at specific topic
+	// if there are several consumers in one topic, send log message to all consumers.
 	logstream.Trie.RegisterConsumer("A", stdout.New(context.Background(), loglevel.Debug, nil))
 	logstream.Trie.RegisterTopic("B")
 	logstream.Trie.RegisterConsumer("B", stdout.New(context.Background(), loglevel.Error, nil))
