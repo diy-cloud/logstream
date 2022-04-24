@@ -4,7 +4,7 @@ logstream is simple library for logging
 
 ## install
 
-`go get github.com/snowmerak/logstream`
+`go get github.com/snowmerak/logstream/v2`
 
 ## diagram
 
