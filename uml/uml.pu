@@ -30,7 +30,6 @@ actor consumer4
 consumer1 -[hidden]right-> consumer2
 consumer2 -[hidden]right-> consumer3
 consumer3 -[hidden]right-> consumer4
-consumer4 -[hidden]right-> consumer5
 
 producer1 -down-> trie
 producer2 -down-> trie
